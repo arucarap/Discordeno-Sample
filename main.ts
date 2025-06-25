@@ -32,7 +32,7 @@ const HelloCommand: SlashCommand = {
 
 const serviceAccountAuth = new JWT({
     email: Deno.env.get("GOOGLE_EMAIL"),
-    key: Deno.env.get("GOOGLE_SECRET"),
+    key: Deno.env.get("GOOGLE_SECRET")!.replace(/\\n/g, "\n"),
     scopes: ['https://www.googleapis.com/auth/spreadsheets'],
 });
 
