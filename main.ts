@@ -77,9 +77,9 @@ const UpdateWarPotentialCommand: SlashCommand = {
                 var updateTargetIndex = i;
                 if (lastI > 0) { // サブアカウントがあるユーザーの更新処理
                     if (isSubAccount) {
-                        updateTargetIndex = sheet.getCell(lastI, 1).value < sheet.getCell(i, 1) ? lastI : i;
+                        updateTargetIndex = sheet.getCell(lastI, 1).value < sheet.getCell(i, 1).value ? lastI : i;
                     } else {
-                        updateTargetIndex = sheet.getCell(lastI, 1).value > sheet.getCell(i, 1) ? lastI : i;
+                        updateTargetIndex = sheet.getCell(lastI, 1).value > sheet.getCell(i, 1).value ? lastI : i;
                     }
                     isUpdateSucceeded = true;
                     userDendenName = sheet.getCell(updateTargetIndex, 0).value;
