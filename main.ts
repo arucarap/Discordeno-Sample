@@ -74,18 +74,25 @@ const UpdateWarPotentialCommand: SlashCommand = {
             const discordIdCell = sheet.getCell(i, 4);
             if (interaction.user.username == discordIdCell.value) {
                 var updateTargetIndex = i;
-                if (isSubAccount) {
-                    if (lastI > 0) {
-                        updateTargetIndex = sheet.getCell(lastI, 1).value > sheet.getCell(i, 1) ? lastI : i;
+                if (lastI > 0) {
+                    if (isSubAccount) {
+                        updateTargetIndex = sheet.getCell(lastI, 1).value < sheet.getCell(i, 1) ? lastI : i;
                     } else {
-                        lastI = i;
-                        continue;
+                        updateTargetIndex = sheet.getCell(lastI, 1).value > sheet.getCell(i, 1) ? lastI : i;
                     }
+                    isUpdateSucceeded = true;
+                    userDendenName = await updateWarPotentialCell(warPotential, sheet, updateTargetIndex);
+                    
+                    break;
+                } else {
+                    lastI = i;
                 }
-                isUpdateSucceeded = true;
-                userDendenName = await updateWarPotentialCell(warPotential, sheet, updateTargetIndex);
-                break;
             }
+        }
+
+        if (!isUpdateSucceeded && lastI > 0) {
+            isUpdateSucceeded = true;
+            userDendenName = await updateWarPotentialCell(warPotential, sheet, lastI);
         }
 
         var response = '';
