@@ -85,7 +85,7 @@ const UpdateWarPotentialCommand: SlashCommand = {
                     userDendenName = sheet.getCell(updateTargetIndex, 0).value;
                     beforeWarPotential = await updateWarPotentialCell(warPotential, sheet, updateTargetIndex);
 
-                    lastI = i;
+                    lastI = updateTargetIndex;
 
                     break;
                 } else {
