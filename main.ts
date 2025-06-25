@@ -68,21 +68,25 @@ const UpdateWarPotentialCommand: SlashCommand = {
         var isUpdateSucceeded = false;
         var lastI = 0;
         var userDendenName = '（誰だよ）';
+        var beforeWarPotential = -1;
         const warPotential = interaction.data.options[0].value;
         const isSubAccount = interaction.data.options[1] && interaction.data.options[1].value;
         for (var i = 1; i < maxRow; i++) {
             const discordIdCell = sheet.getCell(i, 4);
             if (interaction.user.username == discordIdCell.value) {
                 var updateTargetIndex = i;
-                if (lastI > 0) {
+                if (lastI > 0) { // サブアカウントがあるユーザーの更新処理
                     if (isSubAccount) {
                         updateTargetIndex = sheet.getCell(lastI, 1).value < sheet.getCell(i, 1) ? lastI : i;
                     } else {
                         updateTargetIndex = sheet.getCell(lastI, 1).value > sheet.getCell(i, 1) ? lastI : i;
                     }
                     isUpdateSucceeded = true;
-                    userDendenName = await updateWarPotentialCell(warPotential, sheet, updateTargetIndex);
-                    
+                    userDendenName = sheet.getCell(updateTargetIndex, 0).value;
+                    beforeWarPotential = await updateWarPotentialCell(warPotential, sheet, updateTargetIndex);
+
+                    lastI = i;
+
                     break;
                 } else {
                     lastI = i;
@@ -90,14 +94,15 @@ const UpdateWarPotentialCommand: SlashCommand = {
             }
         }
 
-        if (!isUpdateSucceeded && lastI > 0) {
+        if (!isUpdateSucceeded && lastI > 0) { // サブアカウントがないユーザーの更新処理
             isUpdateSucceeded = true;
-            userDendenName = await updateWarPotentialCell(warPotential, sheet, lastI);
+            userDendenName = sheet.getCell(lastI, 0).value;
+            beforeWarPotential = await updateWarPotentialCell(warPotential, sheet, lastI);
         }
 
         var response = '';
         if (isUpdateSucceeded) {
-            response = `${userDendenName}さんの戦力を${warPotential}kに書き換えました！`;
+            response = `${userDendenName}さんの戦力を${beforeWarPotential}kから${warPotential}kに書き換えました！`;
         } else {
             response = 'エラーデス！！\nDiscordのユーザーIDと一致するスプレッドシートのデータが見つかりませんでした。\n事前にスプレッドシートにIDを登録してください。';
         }
@@ -114,6 +119,7 @@ const UpdateWarPotentialCommand: SlashCommand = {
 
 async function updateWarPotentialCell(warPotential, sheet, i) {
     const warPotentialCell = sheet.getCell(i, 1);
+    const beforeWarPotential = warPotentialCell.value;
     warPotentialCell.value = warPotential;
 
     const epoch = Date.UTC(1899, 11, 30);
@@ -124,7 +130,7 @@ async function updateWarPotentialCell(warPotential, sheet, i) {
 
     await sheet.saveUpdatedCells();
 
-    return sheet.getCell(i, 0).value;
+    return beforeWarPotential;
 };
 
 const RegisterDiscordIdCommand: SlashCommand = {
