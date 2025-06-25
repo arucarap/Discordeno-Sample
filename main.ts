@@ -269,6 +269,7 @@ const bot = createBot({
             console.log(`${payload.user.username} is ready!`);
         },
         interactionCreate:async  (_bot, interaction) => {
+            console.log(interaction);
             if (interaction.data.name == "chaofan") {
                 await HelloCommand.response(bot, interaction);
             } else {
