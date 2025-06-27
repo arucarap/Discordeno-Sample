@@ -117,6 +117,17 @@ const UpdateWarPotentialCommand: SlashCommand = {
     }
 }
 
+async function handleError(e, token) {
+    await bot.helpers.sendFollowupMessage(token, {
+        type: InteractionResponseTypes.ChannelMessageWithSource,
+        data: {
+            content: 'サーバー内部でエラーが発生しました。',
+            flags: 1 << 6
+        }
+    });
+    console.error(e);
+};
+
 async function updateWarPotentialCell(warPotential, sheet, i) {
     const warPotentialCell = sheet.getCell(i, 1);
     const beforeWarPotential = warPotentialCell.value;
@@ -275,7 +286,7 @@ const bot = createBot({
             console.log(`${payload.user.username} is ready!`);
         },
         interactionCreate:async  (_bot, interaction) => {
-            console.log(interaction);
+            console.log(`/${interaction.data.name} performed by ${interaction.user.username}.`, interaction.data);
             if (interaction.data.name == "chaofan") {
                 await HelloCommand.response(bot, interaction);
             } else {
@@ -286,11 +297,11 @@ const bot = createBot({
                     }
                 });
                 if (interaction.data.name == "update_war_potential") {
-                    await UpdateWarPotentialCommand.response(bot, interaction);
+                    await UpdateWarPotentialCommand.response(bot, interaction).catch(async (e) => { await handleError(e, interaction.token) });
                 } else if (interaction.data.name == "register_discord_id") {
-                    await RegisterDiscordIdCommand.response(bot, interaction);
+                    await RegisterDiscordIdCommand.response(bot, interaction).catch(async (e) => { await handleError(e, interaction.token) });
                 } else if (interaction.data.name == "rank") {
-                    await RankCommand.response(bot, interaction);
+                    await RankCommand.response(bot, interaction).catch(async (e) => { await handleError(e, interaction.token) });
                 }
             }
         }
