@@ -318,3 +318,7 @@ bot.helpers.createGlobalApplicationCommand(RankCommand.info);
 bot.helpers.upsertGlobalApplicationCommands([UpdateWarPotentialCommand.info, HelloCommand.info, RegisterDiscordIdCommand.info, RankCommand.info]);
 
 await startBot(bot);
+
+Deno.cron("Continuous Request", "*/2 * * * *", () => {
+    console.log("running...");
+});
